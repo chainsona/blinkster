@@ -106,9 +106,9 @@ export const POST = async (req: Request) => {
 
     transaction.add(
       // Set transaction compute units
-      ComputeBudgetProgram.setComputeUnitLimit({
-        units: 800,
-      }),
+      // ComputeBudgetProgram.setComputeUnitLimit({
+      //   units: 800,
+      // }),
       new TransactionInstruction({
         keys: [{ pubkey: fromPubkey, isSigner: true, isWritable: true }],
         data: Buffer.from(username, "utf-8"),
