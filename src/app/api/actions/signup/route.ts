@@ -30,10 +30,10 @@ export const GET = async (req: Request) => {
     ).toString();
 
     const payload: ActionGetResponse = {
-      title: "Sign up",
+      title: "Become a Blinkster",
       icon: new URL("/blinkster.png", requestUrl.origin).toString(),
       description:
-        "Blinkster: a no-code tool to create custom Blinks from top Solana protocols effortlessly.",
+        "No-code tool to create custom Blinks from top Solana protocols effortlessly.",
       label: "Sign up",
       links: {
         actions: [
