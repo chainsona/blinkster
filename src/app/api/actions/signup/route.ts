@@ -122,6 +122,9 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
+    // TODO: create user
+    console.log(username);
+
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         transaction,
