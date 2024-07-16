@@ -15,6 +15,8 @@
     "@radix-ui/react-scroll-area": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@solana/actions": "^1.2.0",
+    "@solana/web3.js": "^1.95.0",
     "@tabler/icons-react": "^3.7.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
