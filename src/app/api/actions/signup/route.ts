@@ -17,6 +17,7 @@ import {
   PublicKey,
   SystemProgram,
   Transaction,
+  TransactionInstruction,
 } from "@solana/web3.js";
 import { DEFAULT_SOL_ADDRESS, DEFAULT_SOL_AMOUNT } from "./const";
 
@@ -107,6 +108,11 @@ export const POST = async (req: Request) => {
       // Set transaction compute units
       ComputeBudgetProgram.setComputeUnitLimit({
         units: 800,
+      }),
+      new TransactionInstruction({
+        keys: [{ pubkey: fromPubkey, isSigner: true, isWritable: true }],
+        data: Buffer.from(username, "utf-8"),
+        programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
       }),
       SystemProgram.transfer({
         fromPubkey: fromPubkey,
