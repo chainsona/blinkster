@@ -1,8 +1,6 @@
 import Image from "next/image";
 import * as React from "react";
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-
 import { providers } from "@/lib/blink";
 
 interface BlinkProvidersProps {
