@@ -60,11 +60,12 @@ export function NavBar() {
 
       <nav className="rounded-lg bg-neutral-950 w-64 px-3 py-2 dark:text-neutral-300 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="text-sm">chainsona</div>
+          <div className="">Editor</div>
 
-          <div className="hover:text-neutral-50 hover:cursor-pointer">
+          {/* TODO: Session management */}
+          {/* <div className="hover:text-neutral-50 hover:cursor-pointer">
             <FluentPlugDisconnected16Regular />
-          </div>
+          </div> */}
         </div>
         <div className="flex items-center gap-3">
           {items.map((item, index) => (
