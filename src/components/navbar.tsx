@@ -1,22 +1,39 @@
 import Link from "next/link";
-import { PhEyesFill } from "@/components/logo";
 import { usePathname } from "next/navigation";
+import { Madimi_One } from "next/font/google";
+import { Badge } from "./ui/badge";
+import {
+  FluentPlugDisconnected16Regular,
+  LineMdGithubLoop,
+  LineMdTwitterX,
+} from "./ui/icons";
 
-const items = [
+const madimi = Madimi_One({
+  weight: "400",
+  style: "normal",
+  subsets: ["latin"],
+});
+
+const items: {
+  id: string;
+  label: string;
+  href: string;
+  target?: string;
+  icon?: React.ReactNode;
+}[] = [
   {
-    id: "designer",
-    label: "Designer",
-    href: "/designer",
+    id: "github",
+    label: "Github",
+    href: "https://github.com/chainsona/blinkster",
+    target: "_blank",
+    icon: <LineMdGithubLoop />,
   },
   {
-    id: "catalog",
-    label: "Catalog",
-    href: "/catalog",
-  },
-  {
-    id: "about",
-    label: "About",
-    href: "/about",
+    id: "x",
+    label: "X",
+    href: "https://x.com/iBlinkTo",
+    target: "_blank",
+    icon: <LineMdTwitterX />,
   },
 ];
 
@@ -24,33 +41,43 @@ export function NavBar() {
   const path = usePathname();
 
   return (
-    <div className="border-b border-neutral-700 min-h-16 flex h-16 items-center px-4">
+    <div className="flex items-center justify-between pl-2">
       {/* Navbar Title */}
-      <Link
-        className="text-lg font-semibold text-black dark:text-white"
-        href="/"
-      >
-        <div className="flex space-x-1 justify-center items-center">
-          <div className="text-2xl">
+      <Link className="font-semibold text-black dark:text-white " href="/">
+        <div className="flex items-center justify-between gap-2">
+          {/* <div className="text-2xl">
             <PhEyesFill />
-          </div>
-          <h1 className="text-lg font-semibold">Blinkster</h1>
+          </div> */}
+          <h1 className={`text-2xl font-semibold ${madimi.className}`}>
+            iBlink
+          </h1>
+
+          <Badge variant={"outline"} className="text-yellow-400">
+            Beta
+          </Badge>
         </div>
       </Link>
 
-      <nav className="dark:text-neutral-200 flex items-center space-x-4 lg:space-x-6 mx-6">
-        {items.map((item, index) => (
-          <Link
-            key={`${item.id}-${index}`}
-            className={`text-sm font-medium ${
-              path.endsWith(item.id) ? "text-primary" : "text-muted-foreground"
-            }
-            )} transition-colors hover:text-primary`}
-            href={item.href}
-          >
-            {item.label}
-          </Link>
-        ))}
+      <nav className="rounded-lg bg-neutral-950 w-64 px-3 py-2 dark:text-neutral-300 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="text-sm">chainsona</div>
+
+          <div className="hover:text-neutral-50 hover:cursor-pointer">
+            <FluentPlugDisconnected16Regular />
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          {items.map((item, index) => (
+            <Link
+              key={`${item.id}-${index}`}
+              className={`text-2xl md:text-xl font-medium transition-colors hover:text-primary`}
+              href={item.href}
+              target={item.target || "_self"}
+            >
+              {item.icon}
+            </Link>
+          ))}
+        </div>
       </nav>
     </div>
   );

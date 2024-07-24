@@ -11,7 +11,7 @@ import {
 } from "@solana/actions";
 import {
   clusterApiUrl,
-  ComputeBudgetProgram,
+  // ComputeBudgetProgram,
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,

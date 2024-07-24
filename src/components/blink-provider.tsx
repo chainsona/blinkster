@@ -7,7 +7,7 @@ import { providers } from "@/lib/blink";
 
 interface BlinkProvidersProps {
   currentProvider: string;
-  setCurrentProvider: (provider: string) => void;
+  setCurrentProvider: (domain: string) => void;
 }
 
 export function BlinkProviders({
@@ -15,17 +15,20 @@ export function BlinkProviders({
   setCurrentProvider,
 }: BlinkProvidersProps) {
   return (
-    <ScrollArea className="w-full flex items-center justify-center whitespace-nowrap">
+    <div className="overflow-hidden rounded-2xl w-full sm:h-full sm:w-32 bg-neutral-700">
       <div
-        className={`w-full p-4 flex flex-row sm:flex-col items-start sm:items-center justify-start sm:justify-center space-x-4 sm:space-x-0 space-y-0 sm:space-y-2`}
+        className={`overflow-x-auto md:overflow-y-auto w-full h-full flex-grow p-4 flex flex-row sm:flex-col items-start sm:items-start justify-start sm:justify-start space-x-4 sm:space-x-0 space-y-0 sm:space-y-2 scrollbar-thin scrollbar-thumb-[#1A1A1E] scrollbar-track-transparent`}
       >
+        {/* <div
+          className={`w-full p-4 flex flex-row sm:flex-col items-start sm:items-center justify-start sm:justify-center space-x-4 sm:space-x-0 space-y-0 sm:space-y-2`}
+        > */}
         {Object.keys(providers).map((domain: string) => (
           <figure key={providers[domain].name} className="shrink-0">
             <button
-              className={`relative overflow-hidden rounded-md border-2 ${
-                currentProvider === providers[domain].id
-                  ? "border-[#0070f3] shadow-[0_4px_14px_0_rgb(0,118,255,39%)]"
-                  : ""
+              className={`relative overflow-hidden rounded-xl border-4 ${
+                currentProvider === domain
+                  ? "border-yellow-500 shadow-[0_0px_14px_0_rgb(234,179,8,39%)]"
+                  : "border-neutral-700"
               } p-0 mb-2`}
               onClick={() => {
                 setCurrentProvider(domain);
@@ -47,8 +50,9 @@ export function BlinkProviders({
             </figcaption>
           </figure>
         ))}
+        {/* </div> */}
+        {/* <ScrollBar orientation="vertical" /> */}
       </div>
-      <ScrollBar orientation="vertical" />
-    </ScrollArea>
+    </div>
   );
 }
