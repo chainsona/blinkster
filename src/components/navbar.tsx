@@ -43,17 +43,17 @@ export function NavBar() {
   return (
     <div className="flex items-center justify-between pl-2">
       {/* Navbar Title */}
-      <Link className="font-semibold text-black dark:text-white " href="/">
-        <div className="flex items-center justify-between gap-2">
-          {/* <div className="text-2xl">
-            <PhEyesFill />
-          </div> */}
+      <Link
+        className="text-lg font-semibold text-black dark:text-white"
+        href="/"
+      >
+        <div className="flex space-x-1 justify-center items-center">
           <h1 className={`text-2xl font-semibold ${madimi.className}`}>
             iBlink
           </h1>
 
-          <Badge variant={"outline"} className="text-yellow-400">
-            Beta
+          <Badge variant={"outline"} className="text-red-500">
+            Alpha
           </Badge>
         </div>
       </Link>
