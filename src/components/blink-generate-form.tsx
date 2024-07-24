@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 
 import { cn } from "@/lib/utils";
 import { Combobox } from "./combobox";
+import { OcticonCopy16 } from "./ui/icons";
 
 function FormMarketplace(
   userParams: any,
@@ -30,7 +31,7 @@ function FormMarketplace(
         />
       </LabelInputContainer>
 
-      <button className="p-[3px] relative w-full">
+      <button className="p-[3px] relative w-full h-10 px-6 py-2 bg-transparent bg-[#FFE35E] text-neutral-700 text-sm rounded-xl font-bold transform hover:-translate-y-1 transition duration-400">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
         <div className="px-8 py-2  bg-black rounded-[6px]  relative group transition duration-200 text-white hover:bg-transparent">
           Generate
@@ -89,8 +90,8 @@ function FormSwap(
       </LabelInputContainer>
 
       <button className="p-[3px] relative w-full" type="submit">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg" />
-        <div className="px-8 py-2  bg-black rounded-[6px]  relative group transition duration-200 text-white hover:bg-transparent">
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-200 to-amber-400 rounded-lg" />
+        <div className=" rounded-[6px] px-8 py-2 bg-[#FFE35E] text-neutral-800 font-medium relative group transition duration-200 hover:bg-transparent">
           Generate
         </div>
       </button>
@@ -128,11 +129,12 @@ export function BlinkGenerationForm({
     switch (action) {
       case "buy-floor":
         return FormMarketplace(userParams, setUserParams, handleSubmit);
+
       case "swap":
       case "trade":
         return FormSwap(userParams, setUserParams, async (e) => {
           e.preventDefault();
-          console.log("Swap submitted");
+          console.debug("Swap submitted");
 
           const actionData = providerActions.find(
             (action: any) => action.id === "swap" || action.id === "trade"
@@ -166,56 +168,60 @@ export function BlinkGenerationForm({
   }
 
   return (
-    <div className="">
-      <Combobox
-        items={providerActions?.map((action: any) => ({
-          label: action.name,
-          value: action.id,
-        }))}
-        selected={
-          userParams?.[provider?.id]?.lastAction
-            ? userParams[provider?.id]?.lastAction
-            : `${providerActions?.[0]?.id}`
-        }
-        onSelect={(value) => {
-          const params: any = userParams;
-          if (provider?.id) {
-            params[provider?.id] = {
-              ...(params[provider?.id] || {}),
-              ...{ lastAction: value },
-            };
+    <div className="h-full flex flex-col items-center justify-center scrollbar-thin scrollbar-thumb-[#1A1A1E] scrollbar-track-transparent">
+      <div className="min-w-60 w-full">
+        <Combobox
+          items={providerActions?.map((action: any) => ({
+            label: action.name,
+            value: action.id,
+          }))}
+          selected={
+            userParams?.[provider?.id]?.lastAction
+              ? userParams[provider?.id]?.lastAction
+              : `${providerActions?.[0]?.id}`
           }
-          console.log("Params", params);
-          setUserParams(params);
-        }}
-      />
-
-      {generateForm(
-        userParams?.[provider?.id]?.lastAction || providerActions?.[0]?.id
-      )}
-
-      <div className="w-full max-w-screen-sm px-2 my-4 flex flex-col items-center justify-center space-y-3">
-        <button
-          className="w-full h-full shadow-[0_0_0_3px_#000000_inset] px-6 py-2 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
-          onClick={() => {
-            navigator.clipboard.writeText(blinkUrl || "");
+          onSelect={(value) => {
+            const params: any = userParams;
+            if (provider?.id) {
+              params[provider?.id] = {
+                ...(params[provider?.id] || {}),
+                ...{ lastAction: value },
+              };
+            }
+            console.log("Params", params);
+            setUserParams(params);
           }}
-        >
-          Copy Blink
-        </button>
+        />
+
+        {generateForm(
+          userParams?.[provider?.id]?.lastAction || providerActions?.[0]?.id
+        )}
+      </div>
+
+      <div className="hidden sm:flex sm:grow"></div>
+
+      <div className="w-full max-w-screen-sm px-2 my-4 flex items-center justify-center gap-3">
         <button
-          className="w-full h-full shadow-[0_0_0_3px_#000000_inset] px-6 py-2 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400"
+          className="w-full h-12 px-6 py-2 bg-transparent bg-[#383838] text-neutral-200 text-sm rounded-xl font-bold transform hover:-translate-y-1 transition duration-400"
           onClick={() => {
             // open a link to share on Solana
             window.open(
               encodeURI(
-                `http://x.com/share?text=Look, I Blink Too!\n\n&url=${blinkUrl}&hashtags=Solana,Blinks,Actions`
+                `http://x.com/share?text=Look, @iBlinkTo win Big!\n\n&url=${blinkUrl}&hashtags=Solana,Blinks,Actions`
               ),
               "_blank"
             );
           }}
         >
           Share on <span className="text-lg">𝕏</span>
+        </button>
+        <button
+          className="h-12 px-6 py-2 bg-transparent bg-[#383838] text-neutral-200 text-sm rounded-xl font-bold transform hover:-translate-y-1 transition duration-400"
+          onClick={() => {
+            navigator.clipboard.writeText(blinkUrl || "");
+          }}
+        >
+          <OcticonCopy16 />
         </button>
       </div>
     </div>

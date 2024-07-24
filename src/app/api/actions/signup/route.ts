@@ -11,7 +11,7 @@ import {
 } from "@solana/actions";
 import {
   clusterApiUrl,
-  ComputeBudgetProgram,
+  // ComputeBudgetProgram,
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
@@ -31,10 +31,9 @@ export const GET = async (req: Request) => {
     ).toString();
 
     const payload: ActionGetResponse = {
-      title: "Become a Blinkster",
-      icon: new URL("/blinkster.png", requestUrl.origin).toString(),
-      description:
-        "No-code tool to create custom Blinks from top Solana protocols effortlessly.",
+      title: "Let me Blink!",
+      icon: new URL("/iblinkto.gif", requestUrl.origin).toString(),
+      description: "No-code Blinks builder for everyone",
       label: "Sign up",
       links: {
         actions: [
@@ -102,12 +101,10 @@ export const POST = async (req: Request) => {
       throw `account may not be rent exempt: ${toPubkey.toBase58()}`;
     }
 
-    const transaction = new Transaction();
-
-    transaction.add(
+    const transaction = new Transaction().add(
       // Set transaction compute units
       // ComputeBudgetProgram.setComputeUnitLimit({
-      //   units: 800,
+      //   units: 30_000,
       // }),
       new TransactionInstruction({
         keys: [{ pubkey: fromPubkey, isSigner: true, isWritable: true }],
@@ -128,13 +125,13 @@ export const POST = async (req: Request) => {
       await connection.getLatestBlockhash()
     ).blockhash;
 
-    // TODO: create user
+    // TODO: Web2 implementation to create user in DB
     console.log(username);
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
         transaction,
-        message: `Welcome to Blinkster, ${username}!`,
+        message: `I Blink to you, ${username}!`,
       },
       // note: no additional signers are needed
       // signers: [],

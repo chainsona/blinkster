@@ -91,38 +91,37 @@ export default function Home() {
   }, [currentProvider, getApiResponse]);
 
   return (
-    <main className="overflow-hidden min-h-screen sm:max-h-screen w-full flex flex-col">
+    <main className="sm:overflow-hidden min-h-screen h-screen sm:max-h-screen w-full flex flex-col p-4 bg-neutral-900">
       <NavBar />
-      <div className="overflow-hidden grow flex flex-col sm:flex-row">
-        <div className="overflow-hidden flex flex-col sm:flex-row">
-          <aside className="overflow-x-auto sm:overflow-x-hidden overflow-y-hidden sm:overflow-y-auto w-full sm:w-64 border-r border-neutral-700 items-center justify-center">
-            <BlinkProviders
-              currentProvider={currentProvider}
-              setCurrentProvider={setCurrentProvider}
-            />
-          </aside>
 
-          {providers[currentProvider] && (
-            <aside className="sm:w-96 border-r border-neutral-700 p-4 items-center justify-center">
-              <BlinkGenerationForm
-                provider={providers[currentProvider]}
-                providerActions={providerActions}
-                blinkUrl={blinkUrl}
-                setBlinkUrl={setBlinkUrl}
-                userParams={userParams}
-                setUserParams={setUserParams}
-              />
-            </aside>
-          )}
+      <div className="overflow-x-hidden overflow-y-auto sm:overflow-hidden grow h-full flex flex-col sm:flex-row items-start justify-start py-2">
+        <div className="w-full sm:w-fit h-full sm:h-fit">
+          <BlinkProviders
+            currentProvider={currentProvider}
+            setCurrentProvider={setCurrentProvider}
+          />
         </div>
 
-        <div className="w-full flex items-center justify-center px-8 mb-8 md:mb-0 p-8">
+        <div className="sm:grow w-full flex items-center justify-center sm:px-8 mb-8 md:mb-0">
           {blinkUrl && (
-            <div className="w-full h-full overflow-y-auto max-h-fit max-w-xl">
+            <div className="overflow-hidden w-screen max-w-screen sm:max-w-xl sm:h-full sm:overflow-y-auto max-h-fit flex items-center px-0 py-8 sm:p-10 sm:scrollbar-thin sm:scrollbar-thumb-[#1A1A1E] sm:scrollbar-track-transparent">
               <ActionVisualizer {...{ url: blinkUrl }} />
             </div>
           )}
         </div>
+
+        {providers[currentProvider] && (
+          <aside className="w-full  sm:max-w-64 items-center justify-center scrollbar-thin scrollbar-thumb-[#1A1A1E] scrollbar-track-transparent">
+            <BlinkGenerationForm
+              provider={providers[currentProvider]}
+              providerActions={providerActions}
+              blinkUrl={blinkUrl}
+              setBlinkUrl={setBlinkUrl}
+              userParams={userParams}
+              setUserParams={setUserParams}
+            />
+          </aside>
+        )}
       </div>
     </main>
   );
