@@ -10,7 +10,10 @@ const DATA = {
   name: "iBlink",
   description: "No-code Blinks builder for everyone",
   url: "https://iblink.to",
-  images: ["https://iblink.to/iblinkto.gif"],
+  images: ["https://iblink.to/iblinkto.png", "https://iblink.to/iblinkto.gif"],
+  emails: ["gm@iblink.to"],
+  xCreator: "@chainsona",
+  xUsername: "@iBlinkTo",
 };
 
 export const metadata: Metadata = {
@@ -27,7 +30,8 @@ export const metadata: Metadata = {
     siteName: `${DATA.name}`,
     locale: "en_US",
     type: "website",
-    images: [DATA.image],
+    images: DATA.images,
+    emails: DATA.emails,
   },
   robots: {
     index: true,
@@ -43,6 +47,10 @@ export const metadata: Metadata = {
   twitter: {
     title: `${DATA.name}`,
     card: "summary_large_image",
+    site: DATA.xUsername,
+    creator: DATA.xCreator,
+    description: DATA.description,
+    images: DATA.images,
   },
   verification: {
     google: "",
