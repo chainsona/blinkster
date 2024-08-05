@@ -7,6 +7,10 @@ export const GET = async () => {
         pathPattern: "/signup",
         apiPath: "/api/actions/signup",
       },
+      {
+        pathPattern: "/u/orerush/happy-hours",
+        apiPath: "/api/actions/u/orerush/happy-hours",
+      },
     ],
   };
 

@@ -6,10 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@dialectlabs/blinks": "^0.5.0",
+    "@libsql/client": "^0.8.1",
     "@radix-ui/react-dialog": "^1.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-popover": "^1.1.1",
@@ -22,6 +25,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "drizzle-orm": "^0.32.1",
     "framer-motion": "^11.2.12",
     "lucide-react": "^0.397.0",
     "next": "14.2.4",
@@ -37,6 +41,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.19",
+    "drizzle-kit": "^0.23.1",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8.4.38",
