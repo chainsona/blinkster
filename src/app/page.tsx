@@ -8,6 +8,7 @@ import { NavBar } from "@/components/navbar";
 
 import { providers } from "@/lib/blink";
 import { ActionVisualizer } from "@/components/action-visualizer";
+import Image from "next/image";
 
 export default function Home() {
   const [currentProvider, setCurrentProvider] = useState<string>("jup.ag");
@@ -26,8 +27,17 @@ export default function Home() {
       to: "hSOL",
       slippage: 0,
     },
+    "buy-floor": {
+      id: "madlads",
+    },
   });
-  const [blinkUrl, setBlinkUrl] = useState<string | undefined>();
+  const [blinkUrl, setBlinkUrl] = useState<
+    | {
+        action: string;
+        blink: string;
+      }
+    | undefined
+  >();
 
   const getApiResponse = useCallback(async () => {
     if (!!!currentProvider) return;
@@ -35,12 +45,20 @@ export default function Home() {
     // Fetch provider actions.json
     let providerRes: any | null = null;
     try {
-      const res = await fetch(`${providers[currentProvider].url}/actions.json`);
+      const res = await fetch("/api/actions/resolver", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          url: `${providers[currentProvider].url}/actions.json`,
+        }),
+      });
       providerRes = await res.json();
     } catch (error) {
       console.error(error);
     }
-    console.debug("GET DOMAIN/actions.json", providerRes);
+    console.debug("GET {DOMAIN}/actions.json", providerRes);
 
     // If no actions.json, stop
     if (!providerRes) return;
@@ -72,7 +90,13 @@ export default function Home() {
       const res = await fetch(actions[0].url);
       const data = await res.json();
       console.debug("Single Static Action metadata:", JSON.stringify(data));
-      setBlinkUrl(providers[currentProvider].url + actions[0].pattern);
+      console.log(`providers[currentProvider]: ${providers[currentProvider]}`);
+      const blinkUrl_ = {
+        action: providers[currentProvider].url + actions[0].url,
+        blink: providers[currentProvider].url + actions[0].pattern,
+      };
+      console.debug("blinkUrl_", blinkUrl_);
+      setBlinkUrl(blinkUrl_);
     }
   }, [currentProvider]);
 
@@ -91,37 +115,30 @@ export default function Home() {
   }, [currentProvider, getApiResponse]);
 
   return (
-    <main className="sm:overflow-hidden min-h-screen h-screen sm:max-h-screen w-full flex flex-col p-4 bg-neutral-900">
-      <NavBar />
+    <main className="sm:overflow-hidden min-h-screen h-screen sm:max-h-screen w-full flex flex-col items-center justify-center p-4 bg-[#E5B34A]">
+      <div className="flex flex-col items-center justify-center space-y-8">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center font-['Comic_Sans_MS']">
+          iBlink
+        </h1>
+        <h2 className="text-xl sm:text-2xl md:text-3xl text-center font-['Papyrus']">
+          Custom Blinks for everyone
+        </h2>
+        <Image
+          src="/iblinkto.gif"
+          alt="iBlinkTo"
+          className="max-w-full max-h-full"
+          width={200}
+          height={200}
+        />
 
-      <div className="overflow-x-hidden overflow-y-auto sm:overflow-hidden grow h-full flex flex-col sm:flex-row items-start justify-start py-2">
-        <div className="w-full sm:w-fit h-full sm:h-fit">
-          <BlinkProviders
-            currentProvider={currentProvider}
-            setCurrentProvider={setCurrentProvider}
-          />
-        </div>
-
-        <div className="sm:grow w-full flex items-center justify-center sm:px-8 mb-8 md:mb-0">
-          {blinkUrl && (
-            <div className="overflow-hidden w-screen max-w-screen sm:max-w-xl sm:h-full sm:overflow-y-auto max-h-fit flex items-center px-0 py-8 sm:p-10 sm:scrollbar-thin sm:scrollbar-thumb-[#1A1A1E] sm:scrollbar-track-transparent">
-              <ActionVisualizer {...{ url: blinkUrl }} />
-            </div>
-          )}
-        </div>
-
-        {providers[currentProvider] && (
-          <aside className="w-full  sm:max-w-64 items-center justify-center scrollbar-thin scrollbar-thumb-[#1A1A1E] scrollbar-track-transparent">
-            <BlinkGenerationForm
-              provider={providers[currentProvider]}
-              providerActions={providerActions}
-              blinkUrl={blinkUrl}
-              setBlinkUrl={setBlinkUrl}
-              userParams={userParams}
-              setUserParams={setUserParams}
-            />
-          </aside>
-        )}
+        <a
+          href="https://x.com/iBlinkTo"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-6 py-2 bg-[#1DA1F2] text-white font-['Chalkduster'] rounded-full hover:bg-[#0c85d0] transition duration-300 transform hover:scale-110"
+        >
+          Follow us on X
+        </a>
       </div>
     </main>
   );
