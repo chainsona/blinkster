@@ -32,12 +32,13 @@ export const GET = async (req: Request) => {
 
     const payload: ActionGetResponse = {
       title: "Let me Blink!",
-      icon: new URL("/iblinkto.gif", requestUrl.origin).toString(),
+      icon: new URL("/blinksuite.gif", requestUrl.origin).toString(),
       description: "No-code Blinks builder for everyone",
       label: "Sign up",
       links: {
         actions: [
           {
+            type: "transaction",
             label: "Sign up",
             href: `${baseHref}?username={username}`,
             parameters: [
@@ -130,6 +131,7 @@ export const POST = async (req: Request) => {
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
+        type: "transaction",
         transaction,
         message: `I Blink to you, ${username}!`,
       },

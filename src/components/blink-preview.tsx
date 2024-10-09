@@ -1,5 +1,5 @@
 import { getDomain } from "@/lib/utils";
-import { ActionGetResponse, BlinkProvider } from "@/types";
+import {  BlinkProvider } from "@/types";
 
 interface BlinkPreviewProps {
   data: any;

@@ -1,145 +1,198 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { FiEye, FiMousePointer, FiTrendingUp } from "react-icons/fi";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-import { BlinkGenerationForm } from "@/components/blink-generate-form";
-import { BlinkProviders } from "@/components/blink-provider";
-import { NavBar } from "@/components/navbar";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
-import { providers } from "@/lib/blink";
-import { ActionVisualizer } from "@/components/action-visualizer";
-import Image from "next/image";
+const DashboardPage: React.FC = () => {
+  // This is a placeholder for actual data. In a real application, you'd fetch this data from your backend.
+  const kpis = {
+    displayRate: 75.5,
+    interactionRate: 45.2,
+    conversionRate: 12.8,
+  };
+  // Mock data for the graph (last 7 days)
+  const graphData = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    datasets: [
+      {
+        label: "Views",
+        data: [180, 210, 195, 230, 205, 190, 220],
+        backgroundColor: "rgba(255, 99, 132, 0.5)",
+      },
+      {
+        label: "Interactions",
+        data: [95, 120, 105, 135, 110, 100, 125],
+        backgroundColor: "rgba(53, 162, 235, 0.5)",
+      },
+      {
+        label: "Conversions",
+        data: [22, 28, 25, 32, 27, 24, 30],
+        backgroundColor: "rgba(75, 192, 192, 0.5)",
+      },
+    ],
+  };
 
-export default function Home() {
-  const [currentProvider, setCurrentProvider] = useState<string>("jup.ag");
-  const [providerActions, setProviderActions] = useState<any[]>([]);
-
-  const [userParams, setUserParams] = useState<any>({
-    swap: {
-      amount: 0,
-      from: "SOL",
-      to: "SEND",
-      slippage: 0,
-    },
-    trade: {
-      amount: 0,
-      from: "SOL",
-      to: "hSOL",
-      slippage: 0,
-    },
-    "buy-floor": {
-      id: "madlads",
-    },
-  });
-  const [blinkUrl, setBlinkUrl] = useState<
-    | {
-        action: string;
-        blink: string;
-      }
-    | undefined
-  >();
-
-  const getApiResponse = useCallback(async () => {
-    if (!!!currentProvider) return;
-
-    // Fetch provider actions.json
-    let providerRes: any | null = null;
-    try {
-      const res = await fetch("/api/actions/resolver", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "top" as const,
+        labels: {
+          color: "#FFFFFF", // White text for better contrast
+          font: {
+            size: 14 // Increased font size for legend labels
+          }
         },
-        body: JSON.stringify({
-          url: `${providers[currentProvider].url}/actions.json`,
-        }),
-      });
-      providerRes = await res.json();
-    } catch (error) {
-      console.error(error);
-    }
-    console.debug("GET {DOMAIN}/actions.json", providerRes);
+      },
+      title: {
+        display: true,
+        text: "Views, Interactions, and Conversions",
+        color: "#FFFFFF", // White text for better contrast
+        font: {
+          size: 18 // Increased font size for title
+        }
+      },
+    },
+    scales: {
+      x: {
+        grid: {
+          color: "rgba(255, 255, 255, 0.1)", // Subtle grid lines
+        },
+        ticks: {
+          color: "#FFFFFF", // White text for better contrast
+          font: {
+            size: 12 // Increased font size for x-axis labels
+          }
+        },
+      },
+      y: {
+        grid: {
+          color: "rgba(255, 255, 255, 0.1)", // Subtle grid lines
+        },
+        ticks: {
+          color: "#FFFFFF", // White text for better contrast
+          font: {
+            size: 12 // Increased font size for y-axis labels
+          }
+        },
+      },
+    },
+  };
 
-    // If no actions.json, stop
-    if (!providerRes) return;
-
-    // Extract actions from actions.json
-    const actions: any[] = [];
-    providerRes.rules.forEach((rule: any) => {
-      const action: { [key: string]: any } = {};
-      console.debug("Provider rule", JSON.stringify(rule));
-
-      action.id = rule.pathPattern.includes("/*")
-        ? rule.apiPath.replace("/**", "").replace("/*").split("/").at(-1)
-        : rule.apiPath.split("/").at(-1);
-
-      action.name =
-        action.id[0].toUpperCase() + action.id?.replaceAll("-", " ").slice(1);
-
-      action.pattern = `${providers[currentProvider].url}${rule.pathPattern}`;
-      action.url = String(rule.apiPath);
-
-      console.debug("Provider action", JSON.stringify(action));
-      actions.push(action);
-    });
-    setProviderActions(actions);
-
-    // If only one action, visualize it
-    if (actions.length === 1 && !actions[0].url.includes("/*")) {
-      console.debug("Single Static Action:", JSON.stringify(actions[0]));
-      const res = await fetch(actions[0].url);
-      const data = await res.json();
-      console.debug("Single Static Action metadata:", JSON.stringify(data));
-      console.log(`providers[currentProvider]: ${providers[currentProvider]}`);
-      const blinkUrl_ = {
-        action: providers[currentProvider].url + actions[0].url,
-        blink: providers[currentProvider].url + actions[0].pattern,
-      };
-      console.debug("blinkUrl_", blinkUrl_);
-      setBlinkUrl(blinkUrl_);
-    }
-  }, [currentProvider]);
-
-  useEffect(() => {
-    // Get provider from URL query param
-    const urlParams = new URLSearchParams(window.location.search);
-    const provider = urlParams.get("provider");
-    if (provider && providers[provider]) {
-      setCurrentProvider(provider);
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log("currentProvider:", currentProvider);
-    getApiResponse();
-  }, [currentProvider, getApiResponse]);
+  // Calculate total metrics
+  const totalViews = graphData.datasets[0].data.reduce((a, b) => a + b, 0);
+  const totalInteractions = graphData.datasets[1].data.reduce(
+    (a, b) => a + b,
+    0
+  );
+  const totalConversions = graphData.datasets[2].data.reduce(
+    (a, b) => a + b,
+    0
+  );
 
   return (
-    <main className="sm:overflow-hidden min-h-screen h-screen sm:max-h-screen w-full flex flex-col items-center justify-center p-4 bg-[#E5B34A]">
-      <div className="flex flex-col items-center justify-center space-y-8">
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center font-['Comic_Sans_MS']">
-          iBlink
-        </h1>
-        <h2 className="text-xl sm:text-2xl md:text-3xl text-center font-['Papyrus']">
-          Custom Blinks for everyone
-        </h2>
-        <Image
-          src="/iblinkto.gif"
-          alt="iBlinkTo"
-          className="max-w-full max-h-full"
-          width={200}
-          height={200}
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8 text-foreground">Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <KPICard
+          title="Total Views"
+          value={totalViews}
+          icon={<FiEye className="w-6 h-6" />}
+          description="Total number of users who viewed your Blinks"
         />
-
-        <a
-          href="https://x.com/iBlinkTo"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block px-6 py-2 bg-[#1DA1F2] text-white font-['Chalkduster'] rounded-full hover:bg-[#0c85d0] transition duration-300 transform hover:scale-110"
-        >
-          Follow us on X
-        </a>
+        <KPICard
+          title="Total Interactions"
+          value={totalInteractions}
+          icon={<FiMousePointer className="w-6 h-6" />}
+          description="Total number of users who interacted with your Blinks"
+        />
+        <KPICard
+          title="Total Conversions"
+          value={totalConversions}
+          icon={<FiTrendingUp className="w-6 h-6" />}
+          description="Total number of users who made successful transactions"
+        />
       </div>
-    </main>
+      <div className="mt-12">
+        <h2 className="text-2xl font-semibold mb-4 text-foreground">
+          Recent Activity
+        </h2>
+        {/* Add a table or list of recent activities here */}
+        {totalViews === 0 &&
+        totalInteractions === 0 &&
+        totalConversions === 0 ? (
+          <p className="text-muted-foreground">
+            No recent activities to display.
+          </p>
+        ) : (
+          <div
+            className="bg-[#3A3A3A] rounded-xl p-6 shadow-lg"
+            style={{ height: "520px" }}
+          >
+            <Bar options={options} data={graphData} />
+          </div>
+        )}
+      </div>
+    </div>
   );
-}
+};
+
+const KPICard: React.FC<{
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  description: string;
+}> = ({ title, value, icon, description }) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const duration = 2000; // Animation duration in milliseconds
+    const steps = 60; // Number of steps in the animation
+    const increment = value / steps;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= value) {
+        clearInterval(timer);
+        setCount(value);
+      } else {
+        setCount(Math.floor(current));
+      }
+    }, duration / steps);
+
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return (
+    <div className="bg-[#3A3A3A] shadow-lg rounded-xl p-6 transition-all duration-300 hover:shadow-xl">
+      <div className="flex items-center mb-4">
+        <div className="p-3 bg-[#F1D08A]/20 rounded-full mr-4">{icon}</div>
+        <h2 className="text-xl font-semibold text-[#FFFFFF]">{title}</h2>
+      </div>
+      <p className="text-4xl font-bold text-[#F1D08A] mb-2">{count.toLocaleString()}</p>
+      <p className="text-sm text-[#D0D0D0]">{description}</p>
+    </div>
+  );
+};
+
+export default DashboardPage;

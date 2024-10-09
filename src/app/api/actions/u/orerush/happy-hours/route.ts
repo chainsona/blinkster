@@ -44,6 +44,7 @@ export const GET = async (req: Request) => {
       links: {
         actions: [
           {
+            type: "transaction",
             label: "Claim",
             href: `${baseHref}`,
           },
@@ -132,6 +133,7 @@ export const POST = async (req: Request) => {
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
+        type: "transaction",
         transaction,
         message: "See you in the mines! ⛏️",
       },

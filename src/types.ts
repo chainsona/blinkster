@@ -1,69 +1,121 @@
-export interface ActionError {
-  /** non-fatal error message to be displayed to the user */
-  message: string;
-}
+import { ActionsSpecGetResponse, LinkedAction } from "@dialectlabs/blinks";
+import { ActionGetResponse, ActionRuleObject } from "@solana/actions";
 
-export interface ActionGetResponse {
-  /** image url that represents the source of the action request */
-  icon: string;
-  /** describes the source of the action request */
-  title: string;
-  /** brief summary of the action to be performed */
-  description: string;
-  /** button text rendered to the user */
-  label: string;
-  /** UI state for the button being rendered to the user */
-  disabled?: boolean;
-  links?: {
-    /** list of related Actions a user could perform */
-    actions: LinkedAction[];
-  };
-  /** non-fatal error message to be displayed to the user */
-  error?: ActionError;
-}
-
-/** Parameter to accept user input within an action */
-export interface ActionParameter {
-  /** parameter name in url */
-  name: string;
-  /** placeholder text for the user input field */
-  label?: string;
-  /** declare if this field is required (defaults to `false`) */
-  required?: boolean;
-}
-
-export interface ActionPostResponse {
-  /** base64 encoded serialized transaction */
-  transaction: string;
-  /** describes the nature of the transaction */
-  message?: string;
-}
-
-interface ActionRuleObject {
-  /** relative (preferred) or absolute path to perform the rule mapping from */
-  pathPattern: string;
-  /** relative (preferred) or absolute path that supports Action requests */
-  apiPath: string;
-}
-
-export interface BlinkProvider {
-  //** unique identifier for the provider */
+/**
+ * Represents an extended action with additional properties.
+ */
+export interface ActionExtended {
+  /** unique identifier for the action */
   id: string;
-  //** name of the provider */
+  /** unique identifier for the provider */
+  providerId: string;
+  /** name of the action */
   name: string;
-  //** url for the provider */
-  url: string;
-  //** icon url for the provider */
-  icon: string;
-  //** list of related Actions a user could perform */
-  blinks?: ActionGetResponse[];
+  /** description of the action */
+  description: string;
+  /** path pattern for the action */
+  pathPattern: string;
+  /** api path for the action */
+  apiPath: string;
+  /** action url for the action */
+  actionUrl: string;
+  /** action data for the action */
+  actionData: ActionsSpecGetResponse;
+  /** list of related Actions a user could perform */
+  actionParams: LinkedAction[];
+  /** date the action was created */
+  createdAt: string;
 }
 
-export interface LinkedAction {
-  /** URL endpoint for an action */
-  href: string;
-  /** button text rendered to the user */
-  label: string;
-  /** Parameter to accept user input within an action */
-  parameters?: [ActionParameter];
+/**
+ * Extends the ActionRuleObject with additional properties.
+ */
+export interface ActionRuleObjectExtended extends ActionRuleObject {
+  /** unique identifier for the rule (optional) */
+  id?: string;
+  /** action url for the rule */
+  actionUrl: string;
+  /** action data for the rule (optional) */
+  actionData?: any;
+  /** date the rule was created */
+  createdAt: string;
 }
+
+/**
+ * Represents a Blink provider with associated actions and rules.
+ */
+export interface BlinkProvider {
+  /** unique identifier for the provider */
+  id: string;
+  /** name of the provider */
+  name: string;
+  /** url for the provider */
+  url: string;
+  /** domain of the provider */
+  domain: string;
+  /** icon url for the provider */
+  icon: string;
+  /** list of related Actions a user could perform */
+  blinks?: ActionGetResponse[];
+  /** list of related Rules a user could perform */
+  rules?: ActionRuleObjectExtended[];
+  /** date the provider was created */
+  createdAt?: string;
+  /** whether the provider is registered */
+  registered?: boolean;
+}
+
+/**
+ * Represents a campaign with its properties.
+ */
+export type Campaign = {
+  /** unique identifier for the campaign */
+  id: string;
+  /** name of the campaign */
+  name: string;
+  /** description of the campaign (optional) */
+  description: string | null;
+  /** URL of the campaign image (optional) */
+  imageUrl: string;
+  /** status of the campaign */
+  status: string;
+  /** start date of the campaign */
+  startDate: Date;
+  /** end date of the campaign */
+  endDate: Date;
+  /** date the campaign was created */
+  createdAt: Date;
+  /** date the campaign was last updated */
+  updatedAt: Date;
+  /** daily data for the campaign */
+  dailyData?: {
+    date: string;
+    views: number;
+    clicks: number;
+    conversions: number;
+  }[];
+};
+
+/**
+ * Represents a registry blink with its properties.
+ */
+export type RegistryBlink = {
+  /** URL for the action */
+  actionUrl: string;
+  /** URL for the blink (optional) */
+  blinkUrl: string | null;
+  /** URL for the website */
+  websiteUrl: string;
+  /** date the registry blink was created */
+  createdAt: string;
+  /** tags associated with the registry blink (optional) */
+  tags?: string[];
+};
+
+/**
+ * Represents the response from the registry.
+ */
+export type RegistryResponse = {
+  /** array of registry blink results */
+  results: RegistryBlink[];
+};

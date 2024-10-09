@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Combobox } from "./combobox";
 import { OcticonCopy16 } from "./ui/icons";
+import { BlinkProvider } from "@/types";
 
 function FormMarketplace(
   userParams: any,
@@ -100,19 +101,25 @@ function FormSwap(
 }
 
 interface BlinkGenerationFormProps {
-  provider: any;
-  providerActions: any;
-  blinkUrl?: string;
-  setBlinkUrl: (blinkUrl: string) => void;
+  provider: BlinkProvider | null;
+  blinkConfig?: {
+    name: string;
+    actionUrl: string;
+    blinkUrl: string;
+  };
+  setBlinkConfig: (config: {
+    name: string;
+    actionUrl: string;
+    blinkUrl: string;
+  }) => void;
   userParams: any;
   setUserParams: (userParams: any) => void;
 }
 
 export function BlinkGenerationForm({
   provider,
-  providerActions,
-  blinkUrl,
-  setBlinkUrl,
+  blinkConfig,
+  setBlinkConfig,
   userParams,
   setUserParams,
 }: BlinkGenerationFormProps) {
@@ -122,10 +129,11 @@ export function BlinkGenerationForm({
   };
 
   function generateForm(action: string) {
-    if (!providerActions) return;
+    if (!provider?.rules) return;
 
-    console.log("Provider Actions", providerActions);
+    console.log("Provider Action rules", provider?.rules);
     console.log("Action", action);
+
     switch (action) {
       case "buy-floor":
         return FormMarketplace(userParams, setUserParams, handleSubmit);
@@ -136,7 +144,7 @@ export function BlinkGenerationForm({
           e.preventDefault();
           console.debug("Swap submitted");
 
-          const actionData = providerActions.find(
+          const actionData = provider.rules?.find(
             (action: any) => action.id === "swap" || action.id === "trade"
           );
 
@@ -144,7 +152,7 @@ export function BlinkGenerationForm({
 
           // Fetch Action metadata
           const res = await fetch(
-            actionData.url.replace(
+            actionData.actionUrl.replace(
               "/**",
               `/${userParams[action].from}-${userParams[action].to}`
             )
@@ -152,14 +160,16 @@ export function BlinkGenerationForm({
           const data = await res.json();
           console.debug("BlinkGenerationForm data", JSON.stringify(data));
 
-          const blinkUrl =
-            // provider.url +
-            actionData.url.replace(
-              "/**",
-              `/${userParams[action].from}-${userParams[action].to}`
-            );
+          const actionUrl = actionData.pathPattern.replace(
+            "/**",
+            `/${userParams[action].from}-${userParams[action].to}`
+          );
+          const blinkUrl = actionData.apiPath.replace(
+            "/**",
+            `/${userParams[action].from}-${userParams[action].to}`
+          );
           console.log("Blink URL", blinkUrl);
-          setBlinkUrl(blinkUrl);
+          setBlinkConfig({ name: "Swap", actionUrl, blinkUrl });
         });
 
       // default:
@@ -170,15 +180,15 @@ export function BlinkGenerationForm({
   return (
     <div className="h-full flex flex-col items-center justify-center scrollbar-thin scrollbar-thumb-[#1A1A1E] scrollbar-track-transparent">
       <div className="min-w-60 w-full">
-        <Combobox
-          items={providerActions?.map((action: any) => ({
+        {/* <Combobox
+          items={(provider?.rules || []).map((action: any) => ({
             label: action.name,
             value: action.id,
           }))}
           selected={
-            userParams?.[provider?.id]?.lastAction
-              ? userParams[provider?.id]?.lastAction
-              : `${providerActions?.[0]?.id}`
+            userParams?.[provider?.id || ""]?.lastAction
+              ? userParams[provider?.id || ""]?.lastAction
+              : `${provider?.rules?.[0]?.id}`
           }
           onSelect={(value) => {
             const params: any = userParams;
@@ -191,39 +201,40 @@ export function BlinkGenerationForm({
             console.log("Params", params);
             setUserParams(params);
           }}
-        />
+        /> */}
 
-        {generateForm(
-          userParams?.[provider?.id]?.lastAction || providerActions?.[0]?.id
-        )}
+        {/* {generateForm(
+          userParams?.[provider?.id || ""]?.lastAction ||
+            provider?.rules?.[0]?.id
+        )} */}
       </div>
 
       <div className="hidden sm:flex sm:grow"></div>
-
-      <div className="w-full max-w-screen-sm px-2 my-4 flex items-center justify-center gap-3">
-        <button
-          className="w-full h-12 px-6 py-2 bg-transparent bg-[#383838] text-neutral-200 text-sm rounded-xl font-bold transform hover:-translate-y-1 transition duration-400"
-          onClick={() => {
-            // open a link to share on Solana
-            window.open(
-              encodeURI(
-                `http://x.com/share?text=Look, @iBlinkTo win Big!\n\n&url=${blinkUrl}&hashtags=Solana,Blinks,Actions`
-              ),
-              "_blank"
-            );
-          }}
-        >
-          Share on <span className="text-lg">𝕏</span>
-        </button>
-        <button
-          className="h-12 px-6 py-2 bg-transparent bg-[#383838] text-neutral-200 text-sm rounded-xl font-bold transform hover:-translate-y-1 transition duration-400"
-          onClick={() => {
-            navigator.clipboard.writeText(blinkUrl || "");
-          }}
-        >
-          <OcticonCopy16 />
-        </button>
-      </div>
+      {blinkConfig?.blinkUrl && (
+        <div className="w-full max-w-screen-sm px-2 my-4 flex items-center justify-center gap-3">
+          <button
+            className="w-full h-12 px-6 py-2 bg-[#C7973A] text-white text-sm rounded-lg font-bold transform hover:bg-[#E8B54B] transition duration-300 ease-in-out"
+            onClick={() => {
+              window.open(
+                encodeURI(
+                  `http://x.com/share?text=test\n\n&url=https://dial.to/?action=solana-action:${blinkConfig?.actionUrl}`
+                ),
+                "_blank"
+              );
+            }}
+          >
+            <span className="font-['Squada_One'] text-lg">Share on 𝕏</span>
+          </button>
+          <button
+            className="h-12 w-12 bg-[#3B3B3B] text-[#C7973A] rounded-lg font-bold transform hover:bg-[#5A5A5A] transition duration-300 ease-in-out flex items-center justify-center"
+            onClick={() => {
+              navigator.clipboard.writeText(blinkConfig?.blinkUrl || "");
+            }}
+          >
+            <OcticonCopy16 className="w-6 h-6" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
